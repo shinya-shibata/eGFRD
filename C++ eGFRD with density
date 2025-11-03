@@ -1,0 +1,80 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+// ------------------------------------------------------------
+// P(r,t|r0,t0) の計算
+// P = (4πDΔt)^(-3/2) * exp[-| (3/4π) * N * e |^(2/3) / (4DΔt)]
+// ------------------------------------------------------------
+double P_r_t(double r, double r0, double D, double t, double t0, double N, double e)
+{
+    double dt = t - t0;
+    if (dt <= 0.0)
+    {
+        std::cerr << "Error: t must be greater than t0." << std::endl;
+        return 0.0;
+    }
+
+    double coef = 1.0 / std::pow(4.0 * M_PI * D * dt, 1.5);
+    double exponent = -std::pow(std::abs((3.0 / (4.0 * M_PI)) * N * e), 2.0 / 3.0) / (4.0 * D * dt);
+
+    return coef * std::exp(exponent);
+}
+
+// ------------------------------------------------------------
+// エッジ係数 e の決定ルール
+// ------------------------------------------------------------
+double edge_factor(int out_edges, int in_edges)
+{
+    if (out_edges > 1)
+        return 1.0 / out_edges; // 出方向が複数
+    else if (in_edges > 1)
+        return static_cast<double>(in_edges); // 入方向が複数
+    else
+        return 1.0; // エッジが1本のみ
+}
+
+// ------------------------------------------------------------
+// 逐次的に N_k と P を更新
+// ------------------------------------------------------------
+void diffusion_iteration(double r, double r0, double D, double t, double t0,
+                         double N_init, int out_edges, int in_edges, int iterations = 5)
+{
+    double e = edge_factor(out_edges, in_edges);
+    double N = N_init;
+
+    std::cout << "反復回数 | N_k\t\t | P(r,t|r0,t0)" << std::endl;
+    std::cout << "-------------------------------------------" << std::endl;
+
+    for (int k = 0; k < iterations; ++k)
+    {
+        double P = P_r_t(r, r0, D, t, t0, N, e);
+        double N_next = N * P;
+
+        std::cout << std::setw(4) << k
+                  << "     | " << std::scientific << N
+                  << " | " << P << std::endl;
+
+        N = N_next; // 次のステップへ更新
+    }
+}
+
+// ------------------------------------------------------------
+// メイン関数
+// ------------------------------------------------------------
+int main()
+{
+    double r = 1.0;
+    double r0 = 0.0;
+    double D = 1.0e-9;   // 拡散係数 [m^2/s]
+    double t0 = 0.0;
+    double t = 1.0;      // 時間 [s]
+    double N_init = 1.0e6; // 初期濃度
+    int out_edges = 3;     // 出方向エッジ数
+    int in_edges = 1;      // 入方向エッジ数
+    int iterations = 5;    // 反復回数
+
+    diffusion_iteration(r, r0, D, t, t0, N_init, out_edges, in_edges, iterations);
+
+    return 0;
+}
