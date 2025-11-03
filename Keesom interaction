@@ -1,0 +1,40 @@
+import numpy as np
+
+# 物理定数
+epsilon0 = 8.8541878128e-12  # 真空の誘電率 [F/m]
+kB = 1.380649e-23             # ボルツマン定数 [J/K]
+
+def dipole_dipole_energy(U1, U2, r, T):
+    """
+    Keesom型双極子–双極子相互作用エネルギー
+    E = (U1^2 * U2^2) / [3 * (4π * ε0)^2 * kB * T * r^6]
+
+    Parameters
+    ----------
+    U1 : float
+        双極子モーメント1 [C·m]
+    U2 : float
+        双極子モーメント2 [C·m]
+    r : float
+        双極子間距離 [m]
+    T : float
+        温度 [K]
+    """
+    numerator = U1**2 * U2**2
+    denominator = 3 * (4 * np.pi * epsilon0)**2 * kB * T * r**6
+    return numerator / denominator
+
+# ===== 使用例 =====
+U1 = 1.85 * 3.336e-30   # 水分子の双極子モーメント [C·m] (1.85 D)
+U2 = U1
+r = 3e-10               # 分子間距離 3 Å
+T = 298.15              # 室温 [K]
+
+E = dipole_dipole_energy(U1, U2, r, T)
+
+print(f"U1 = {U1:.3e} C·m")
+print(f"U2 = {U2:.3e} C·m")
+print(f"r  = {r:.2e} m")
+print(f"T  = {T} K")
+print(f"E_dipole-dipole = {E:.3e} J")
+print(f"= {E / (1.602e-19):.3e} eV")  # 電子ボルト換算
