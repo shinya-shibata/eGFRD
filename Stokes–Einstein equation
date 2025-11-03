@@ -1,0 +1,32 @@
+import numpy as np
+
+# 定数
+kB = 1.380649e-23  # ボルツマン定数 [J/K]
+
+def diffusion_coefficient(T, eta, R):
+    """
+    Stokes–Einsteinの式
+    D = kB * T / (6 * π * η * R)
+
+    Parameters
+    ----------
+    T : float
+        温度 [K]
+    eta : float
+        粘度 [Pa·s]
+    R : float
+        粒子半径 [m]
+    """
+    return kB * T / (6 * np.pi * eta * R)
+
+# ===== 使用例 =====
+T = 298.15        # 室温 [K]
+eta = 0.001       # 水の粘度 [Pa·s]
+R = 1e-7          # 粒子半径 100 nm
+
+D = diffusion_coefficient(T, eta, R)
+
+print(f"温度 T = {T} K")
+print(f"粘度 η = {eta} Pa·s")
+print(f"粒子半径 R = {R} m")
+print(f"拡散係数 D = {D:.3e} m²/s")
