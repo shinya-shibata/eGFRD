@@ -30,10 +30,15 @@ N["N1"] = N["N0"] * P_val["P0"]
 P_val["P1"] = P(N["N1"] * 1/4, D, delta_t)  # 式内の 1/4 を反映
 N["N2"] = N["N1"] * P_val["P1"]
 
+# 上記はP_val["P1"] = P(N["N1"], D, delta_t, scale=1/4)のほうが良いかも
+
+
+
 # (3) P2, P2', N3
 P_val["P2"] = P(N["N2"], D, delta_t)
 P_val["P2p"] = P(N["N2"] * 1/2, D, delta_t)
 N["N3"] = N["N2"] * P_val["P2"]
+# P2'=P2p
 
 # (4) P3, P3', P3'', N4
 P_val["P3"] = P(N["N3"], D, delta_t)
