@@ -1,4 +1,4 @@
-# 
+# check mathcha
 
 
 import numpy as np
@@ -63,3 +63,16 @@ P_val["P7"] = P(N["N7"], D, delta_t)
 # 結果の確認
 for key in sorted(N.keys()):
     print(f"{key} = {N[key]:.5e}")
+
+# プロット
+fig, ax = plt.subplots(figsize=(8,5))
+x = np.arange(len(N_vals))
+ax.plot(x, N_vals, marker='o')
+ax.set_xticks(x)
+ax.set_xticklabels(labels, rotation=45)
+ax.set_xlabel("step (label)")
+ax.set_ylabel("N value")
+ax.set_title("Sequence of N values over steps")
+ax.grid(True)
+plt.tight_layout()
+plt.show()
