@@ -1,0 +1,65 @@
+# 
+
+
+import numpy as np
+
+# 定数定義
+pi = np.pi
+
+# 拡散定数 D、時間刻み Δt、初期粒子数 N0
+D = 1.0
+delta_t = 0.01
+N0 = 1000
+
+# 共通の確率関数 P(N)
+def P(N, D, delta_t, scale=1.0):
+    """確率 P_i = 1/(4πDΔt)^(3/2) * exp[-(3/(4π)*N*scale)^(2/3) / (4DΔt)]"""
+    prefactor = 1 / ((4 * pi * D * delta_t) ** (3/2))
+    exponent = - (1 / (4 * D * delta_t)) * ((3 / (4 * pi) * N * scale) ** (2/3))
+    return prefactor * np.exp(exponent)
+
+# 初期値
+N = {"N0": N0}
+P_val = {}
+
+# (1) P0, N1
+P_val["P0"] = P(N["N0"], D, delta_t)
+N["N1"] = N["N0"] * P_val["P0"]
+
+# (2) P1, N2
+P_val["P1"] = P(N["N1"] * 1/4, D, delta_t)  # 式内の 1/4 を反映
+N["N2"] = N["N1"] * P_val["P1"]
+
+# (3) P2, P2', N3
+P_val["P2"] = P(N["N2"], D, delta_t)
+P_val["P2p"] = P(N["N2"] * 1/2, D, delta_t)
+N["N3"] = N["N2"] * P_val["P2"]
+
+# (4) P3, P3', P3'', N4
+P_val["P3"] = P(N["N3"], D, delta_t)
+P_val["P3p"] = P((N["N3"] + N["N2"] + N["N5"] * 1/4) if "N5" in N else N["N3"], D, delta_t)
+P_val["P3pp"] = P(N["N3"], D, delta_t)
+N["N4"] = N["N3"] * P_val["P3"]
+
+# (5) P4, P4', P5
+P_val["P4"] = P(N["N4"], D, delta_t)
+N["N5"] = N["N4"] * P_val["P4"]
+P_val["P5"] = P(N["N5"] * 1/4, D, delta_t)
+
+# (6) P5', P6', P6, P7 などを順次展開
+P_val["P5p"] = P(N["N5"] * 1/2, D, delta_t)
+N["N6p"] = N["N5"] * P_val["P5p"]
+
+# P(5'+6'), P6, ...
+P_val["P5p6p"] = P(N["N5"] + N["N6p"], D, delta_t)
+N["N6"] = N["N5"] * P_val["P5"]
+P_val["P6"] = P(N["N6"], D, delta_t)
+
+# 以降も同様に階層を進められます
+# 例: N7 = N6 * P6, N8 = N7 * P7 など
+N["N7"] = N["N6"] * P_val["P6"]
+P_val["P7"] = P(N["N7"], D, delta_t)
+
+# 結果の確認
+for key in sorted(N.keys()):
+    print(f"{key} = {N[key]:.5e}")
