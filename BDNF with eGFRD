@@ -38,6 +38,7 @@ N["N2"] = N["N1"] * P_val["P1"]
 P_val["P2"] = P(N["N2"], D, delta_t)
 P_val["P2p"] = P(N["N2"] * 1/2, D, delta_t)
 N["N3"] = N["N2"] * P_val["P2"]
+N["N3p"] = N["N2"] * P_val["P2p"]
 # P2'=P2p
 
 # (4) P3, P3', P3'', N4
@@ -45,6 +46,8 @@ P_val["P3"] = P(N["N3"], D, delta_t)
 P_val["P3p"] = P((N["N3"] + N["N2"] + N["N5"] * 1/4) if "N5" in N else N["N3"], D, delta_t)
 P_val["P3pp"] = P(N["N3"], D, delta_t)
 N["N4"] = N["N3"] * P_val["P3"]
+N["N4p"] = [N["N3"]+ N["N2"]+ N["N5"]*1/4 ]* P_val["P3p"]
+
 
 # (5) P4, P4', P5
 P_val["P4"] = P(N["N4"], D, delta_t)
@@ -56,7 +59,7 @@ P_val["P5p"] = P(N["N5"] * 1/2, D, delta_t)
 N["N6p"] = N["N5"] * P_val["P5p"]
 
 # P(5'+6'), P6, ...
-P_val["P5p6p"] = P(N["N5"] + N["N6p"], D, delta_t)
+P_val["P5p6p"] = P(N["N5p"] + N["N6p"], D, delta_t)
 N["N6"] = N["N5"] * P_val["P5"]
 P_val["P6"] = P(N["N6"], D, delta_t)
 
@@ -65,8 +68,10 @@ P_val["P6"] = P(N["N6"], D, delta_t)
 N["N7"] = N["N6"] * P_val["P6"]
 P_val["P7"] = P(N["N7"], D, delta_t)
 
-#(7)
 #(7')
+N["N4pp"] = N["N3p"] * P_val["P3pp"]
+P_val["P6p"] = P(N["N6"]+N["N4pp"]+N["Nb_Raf"], D, delta_t)
+
 #(8)
 #(8')
 #(8'')
