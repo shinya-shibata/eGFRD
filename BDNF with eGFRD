@@ -65,6 +65,17 @@ P_val["P6"] = P(N["N6"], D, delta_t)
 N["N7"] = N["N6"] * P_val["P6"]
 P_val["P7"] = P(N["N7"], D, delta_t)
 
+#(7)
+#(7')
+#(8)
+#(8')
+#(8'')
+#(9)
+#(9')
+#(10)
+#(11)
+
+
 # 結果の確認
 for key in sorted(N.keys()):
     print(f"{key} = {N[key]:.5e}")
