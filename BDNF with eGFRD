@@ -81,18 +81,25 @@ N["N7p"] = N["N6p"] * P_val["P6p"]
 P_val["P7p"] = P(N["N7p"], D, delta_t)
 
 #(8'')
-N["N6p+N7pp"] = (N["N5p"]+N["N6p"])* P_val["P5p+P6p"]
-P_val["P6p+P7pp"] = P(N["N6p+N7pp"]*1/4, D, delta_t)
+N["N6p+7pp"] = (N["N5p"]+N["N6p"])* P_val["P5p+P6p"]
+P_val["P6p+P7pp"] = P(N["N6p+7pp"]*1/4, D, delta_t)
 
 #(9)
 N["N8"] = N["N7"] * P_val["P7"]
 N["N8p"] = N["N7p"] * P_val["P7p"]
-
+P_val["P8+P8p"] = P(N["N8"]+N["8p"]*1/2, D, delta_t)
 
 #(9')
-#(10)
-#(11)
+N["N8pp"] = N["N6p+7pp"] * P_val["P6p+7pp"]
+P_val["P8pp"] = P(N["N8pp"], D, delta_t)
 
+#(10)
+N["N9"] = N["N8+8p"] * P_val["P8+8p"]
+P_val["P7+9"] = P(N["N7"]+N["N9"], D, delta_t)
+
+#(11)
+N["N10"] = (N["N7"]+N["N9"]) * P_val["P7+9"]
+P_val["P10"] = P(N["N10"], D, delta_t)
 
 # 結果の確認
 for key in sorted(N.keys()):
