@@ -45,21 +45,29 @@ N["N3p"] = N["N2"] * P_val["P2p"]
 P_val["P3"] = P(N["N3"], D, delta_t)
 P_val["P3p"] = P((N["N3"] + N["N2"] + N["N5"] * 1/4) if "N5" in N else N["N3"], D, delta_t)
 P_val["P3pp"] = P(N["N3"], D, delta_t)
-N["N4"] = N["N3"] * P_val["P3"]
-N["N4p"] = (N["N3"]+ N["N2"]+ N["N5"]*1/4 )* P_val["P3p"]
 
-
-# (5) P4, P4', P5
+#(5)
+N["N4"] = N["N3"]* P_val["P3"]
 P_val["P4"] = P(N["N4"], D, delta_t)
+
+# (5p) 
+N["N4p"] = (N["N3"]+N["N2"]+N["N5"])* P_val["P3"]
+P_val["P4p"] = P(N["N4p"], D, delta_t)
+
+#(6)
 N["N5"] = N["N4"] * P_val["P4"]
 P_val["P5"] = P(N["N5"] * 1/4, D, delta_t)
 
-# (6) P5', P6', P6, P7 などを順次展開
-P_val["P5p"] = P(N["N5"] * 1/2, D, delta_t)
-N["N6p"] = N["N5"] * P_val["P5p"]
+# (6p)
+N["N5p"] = N["N4p"] * P_val["P4p"]
+P_val["P5p"] = P(N["N5p"] * 1/2, D, delta_t)
 
-# P(5'+6'), P6, ...
-P_val["P5p6p"] = P(N["N5p"] + N["N6p"], D, delta_t)
+
+# (6p+7pp)
+N["N6p"] = N["N5p"] * P_val["P5p"]
+P_val["P5p+6p"] = P(N["N5p"] + N["N6p"], D, delta_t)
+
+(7)
 N["N6"] = N["N5"] * P_val["P5"]
 P_val["P6"] = P(N["N6"], D, delta_t)
 
