@@ -4,7 +4,7 @@ import numpy as np
 # 定数定義
 pi = np.pi
  
-時間刻み Δt、初期粒子数 N0
+#時間刻み Δt、初期粒子数 N0
 delta_t = 0.01
 N0 = 32
 # D:reference stokes- einstein equation D = kB * T / (6 * π * η * R)
