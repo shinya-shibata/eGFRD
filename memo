@@ -1,0 +1,182 @@
+import numpy as np
+
+# 定数
+kB = 1.380649e-23  # ボルツマン定数 [J/K]
+
+def diffusion_coefficient(T, eta, R):
+    """
+    Stokes–Einsteinの式
+    D = kB * T / (6 * π * η * R)
+
+    Parameters
+    ----------
+    T : float
+        温度 [K]
+    eta : float
+        粘度 [Pa·s]
+    R : float
+        粒子半径 [m]
+    """
+    return kB * T / (6 * np.pi * eta * R)
+
+# ===== 使用例 =====
+T = 298.15        # 室温 [K]
+eta = 0.001       # 水の粘度 [Pa·s]
+R = 1e-7          # 粒子半径 100 nm
+
+D = diffusion_coefficient(T, eta, R)
+
+print(f"温度 T = {T} K")
+print(f"粘度 η = {eta} Pa·s")
+print(f"粒子半径 R = {R} m")
+print(f"拡散係数 D = {D:.3e} m²/s")
+
+# check mathcha
+import numpy as np
+
+# 定数定義
+pi = np.pi
+ 
+# 拡散定数 D、時間刻み Δt、初期粒子数 N0
+D = 1.0
+delta_t = 0.01
+N0 = 1000
+
+# 共通の確率関数 P(N)
+def P(N, D, delta_t, scale=1.0):
+    """確率 P_i = 1/(4πDΔt)^(3/2) * exp[-(3/(4π)*N*scale)^(2/3) / (4DΔt)]"""
+    prefactor = 1 / ((4 * pi * D * delta_t) ** (3/2))
+    exponent = - (1 / (4 * D * delta_t)) * ((3 / (4 * pi) * N * scale) ** (2/3))
+    return prefactor * np.exp(exponent)
+
+# 初期値
+N = {"N0": N0}
+P_val = {}
+
+# (1) P0, N1
+P_val["P0"] = P(N["N0"], D, delta_t)
+N["N1"] = N["N0"] * P_val["P0"]
+
+# (2) P1, N2
+P_val["P1"] = P(N["N1"] * 1/4, D, delta_t)  # 式内の 1/4 を反映
+N["N2"] = N["N1"] * P_val["P1"]
+
+# 上記はP_val["P1"] = P(N["N1"], D, delta_t, scale=1/4)のほうが良いかも
+
+
+
+# (3) P2, P2', N3
+P_val["P2"] = P(N["N2"], D, delta_t)
+
+# (3p)
+P_val["P2p"] = P(N["N2"] * 1/2, D, delta_t)
+N["N3"] = N["N2"] * P_val["P2"]
+
+#(4)
+P_val["P3"] = P(N["N3"], D, delta_t)
+N["N3p"] = N["N2"] * P_val["P2p"]
+# P2'=P2p
+
+
+
+#(5)
+N["N4"] = N["N3"]* P_val["P3"]
+P_val["P4"] = P(N["N4"], D, delta_t)
+
+#(6)
+N["N5"] = N["N4"] * P_val["P4"]
+P_val["P5"] = P(N["N5"] * 1/4, D, delta_t)
+ 
+# (5p) 
+N["N4p"] = (N["N3"]+N["N2"]+N["N5"])* P_val["P3"]
+P_val["P4p"] = P(N["N4p"], D, delta_t)
+
+#(4p) calculate N5 in (6) 
+P_val["P3p"] = P((N["N3"] + N["N2"] + N["N5"] * 1/4) , D, delta_t)
+
+#(4pp)
+P_val["P3pp"] = P(N["N3p"], D, delta_t)
+
+# (6p)
+N["N5p"] = N["N4p"] * P_val["P4p"]
+P_val["P5p"] = P(N["N5p"] * 1/2, D, delta_t)
+
+
+# (6p+7pp)
+N["N6p"] = N["N5p"] * P_val["P5p"]
+P_val["P5p+6p"] = P(N["N5p"] + N["N6p"], D, delta_t)
+
+(7)
+N["N6"] = N["N5"] * P_val["P5"]
+P_val["P6"] = P(N["N6"], D, delta_t)
+
+# 以降も同様に階層を進められます
+# 例: N7 = N6 * P6, N8 = N7 * P7 など
+N["N7"] = N["N6"] * P_val["P6"]
+P_val["P7"] = P(N["N7"], D, delta_t)
+
+#(7')
+# Nb_Raf を初期化
+N["Nb_Raf"] = 0.5
+N["N4pp"] = N["N3p"] * P_val["P3pp"]
+P_val["P6p"] = P(N["N6"]+N["N4pp"]+N["Nb_Raf"], D, delta_t)
+
+#(8)
+N["N7"] = N["N6"] * P_val["P6"]
+P_val["P7"] = P(N["N7"], D, delta_t)
+
+#(8')
+N["N7p"] = N["N6p"] * P_val["P6p"]
+P_val["P7p"] = P(N["N7p"], D, delta_t)
+
+#(8'')
+N["N6p+7pp"] = (N["N5p"]+N["N6p"])* P_val["P5p+6p"]
+P_val["P6p+7pp"] = P(N["N6p+7pp"]*1/4, D, delta_t)
+
+#(9)
+N["N8"] = N["N7"] * P_val["P7"]
+N["N8p"] = N["N7p"] * P_val["P7p"]
+P_val["P8+8p"] = P(N["N8"]+N["N8p"]*1/2, D, delta_t)
+
+#(9')
+N["N8pp"] = N["N6p+7pp"] * P_val["P6p+7pp"]
+P_val["P8pp"] = P(N["N8pp"], D, delta_t)
+
+#(10)
+N["N9"] = (N["N8"]+N["N8p"]) * P_val["P8+8p"]
+P_val["P7+9"] = P(N["N7"]+N["N9"]*1/2, D, delta_t)
+
+#(11)
+N["N10"] = (N["N7"]+N["N9"]) * P_val["P7+9"]
+P_val["P10"] = P(N["N10"], D, delta_t)
+
+#2週目の(6)
+value = N["N5"] * 1/4 - N["N9"] * 1/2 - N["N8p"] * 1/2
+# P5を計算して辞書に格納
+P_val["P5"] = P(value, D, delta_t)
+
+#(6),(7),(7'),(8),(8'),(9),(10),(11)を繰り返すコードを作る。
+
+# 結果の確認
+for key in sorted(N.keys()):
+    print(f"{key} = {N[key]:.5e}")
+
+# プロット
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(8,5))
+keys = ["N0", "N1", "N2", "N3", "N3p", "N4", "N4p", "N5", "N5p", "N6", "N6p", "N7", "N7p", "N8", "N8p", "N8pp", "N9", "N10"]
+# keysのうち、N辞書に存在するキーだけを抽出して値をリストに
+N_vals = [N[k] for k in keys if k in N]
+# 時間軸 x を作成 (delta_t刻み)
+x = np.arange(len(N_vals)) * delta_t
+# x と N_vals の中身を確認
+
+ax.plot(x, N_vals, marker='o')
+ax.set_xticks(x)
+ax.set_xticklabels(labels, rotation=45)
+ax.set_xlabel("step (label)")
+ax.set_ylabel("N value")
+ax.set_title("Sequence of N values over steps")
+ax.grid(True)
+plt.tight_layout()
+plt.show()
