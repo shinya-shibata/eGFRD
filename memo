@@ -1,3 +1,10 @@
+
+BDNF with eGFRD r^3=3/4πNで計算
+
+CONCENTRATION DEPENDENCE OF THE MEANINTERPARTICLE DISTANCE IN DISPERSE SYSTEMSYu. N.
+Kryuchkov1Translated from Ogneupory i Tekhnicheskaya Keramika, No. 11, pp. 13 – 15, November,
+で別のコードを作成
+
 import numpy as np
 
 # 定数
