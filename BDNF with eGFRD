@@ -131,6 +131,7 @@ for key in sorted(N.keys()):
     print(f"{key} = {N[key]:.5e}")
 
 # プロット
+import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize=(8,5))
 x = np.arange(len(N_vals))
 ax.plot(x, N_vals, marker='o')
