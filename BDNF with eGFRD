@@ -52,13 +52,13 @@ N["N3p"] = N["N2"] * P_val["P2p"]
 N["N4"] = N["N3"]* P_val["P3"]
 P_val["P4"] = P(N["N4"], D, delta_t)
 
-# (5p) 
-N["N4p"] = (N["N3"]+N["N2"]+N["N5"])* P_val["P3"]
-P_val["P4p"] = P(N["N4p"], D, delta_t)
-
 #(6)
 N["N5"] = N["N4"] * P_val["P4"]
 P_val["P5"] = P(N["N5"] * 1/4, D, delta_t)
+
+# (5p) 
+N["N4p"] = (N["N3"]+N["N2"]+N["N5"])* P_val["P3"]
+P_val["P4p"] = P(N["N4p"], D, delta_t)
 
 #(4p) calculate N5 in (6) 
 P_val["P3p"] = P((N["N3"] + N["N2"] + N["N5"] * 1/4) , D, delta_t)
