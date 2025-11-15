@@ -85,6 +85,8 @@ N["N7"] = N["N6"] * P_val["P6"]
 P_val["P7"] = P(N["N7"], D, delta_t)
 
 #(7')
+# Nb_Raf を初期化
+N["Nb_Raf"] = 0.5
 N["N4pp"] = N["N3p"] * P_val["P3pp"]
 P_val["P6p"] = P(N["N6"]+N["N4pp"]+N["Nb_Raf"], D, delta_t)
 
