@@ -6,8 +6,9 @@ pi = np.pi
  
 時間刻み Δt、初期粒子数 N0
 delta_t = 0.01
-N0 = 1000
+N0 = 32
 # D:reference stokes- einstein equation D = kB * T / (6 * π * η * R)
+#血清 (serum) BDNF: 平均約 32.69 ± 8.33 ng/mL
 
 # 共通の確率関数 P(N)
 def P(N, D, delta_t, scale=1.0):
