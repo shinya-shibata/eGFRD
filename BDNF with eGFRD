@@ -113,7 +113,7 @@ P_val["P8pp"] = P(N["N8pp"], D, delta_t)
 
 #(10)
 N["N9"] = (N["N8"]+N["N8p"]) * P_val["P8+8p"]
-P_val["P7+9"] = P(N["N7"]+N["N9"*1/2], D, delta_t)
+P_val["P7+9"] = P(N["N7"]+N["N9"]*1/2, D, delta_t)
 
 #(11)
 N["N10"] = (N["N7"]+N["N9"]) * P_val["P7+9"]
