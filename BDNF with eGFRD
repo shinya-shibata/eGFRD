@@ -5,7 +5,7 @@ import numpy as np
 
 # 定数定義
 pi = np.pi
-
+ 
 # 拡散定数 D、時間刻み Δt、初期粒子数 N0
 D = 1.0
 delta_t = 0.01
