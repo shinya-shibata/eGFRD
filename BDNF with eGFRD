@@ -6,7 +6,8 @@ pi = np.pi
  
 #時間刻み Δt、初期粒子数 N0
 delta_t = 0.01
-N0 = 32
+N0 = 7.134814814814816e+17
+#N0=平均BDNF濃度　(molecules/m^3)
 # D:reference stokes- einstein equation D = kB * T / (6 * π * η * R)
 #血清 (serum) BDNF: 平均約 32.69 ± 8.33 ng/mL
 
