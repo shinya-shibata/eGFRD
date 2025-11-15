@@ -12,9 +12,9 @@ N0 = 32
 
 # 共通の確率関数 P(N)
 def P(N, D, delta_t, scale=1.0):
-    """確率 P_i = 1/(4πDΔt)^(3/2) * exp[-(3/(4π)*N*scale)^(2/3) / (4DΔt)]"""
+    """確率 P_i = 1/(4πDΔt)^(3/2) * exp[-(3/(4π*N*scale))^(2/3) / (4DΔt)]"""
     prefactor = 1 / ((4 * pi * D * delta_t) ** (3/2))
-    exponent = - (1 / (4 * D * delta_t)) * ((3 / (4 * pi) * N * scale) ** (2/3))
+    exponent = - (1 / (4 * D * delta_t)) * ((3 / (4 * pi*N * scale)) ** (2/3))
     return prefactor * np.exp(exponent)
 
 # 初期値
