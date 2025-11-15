@@ -112,12 +112,19 @@ N["N8pp"] = N["N6p+7pp"] * P_val["P6p+7pp"]
 P_val["P8pp"] = P(N["N8pp"], D, delta_t)
 
 #(10)
-N["N9"] = N["N8+8p"] * P_val["P8+8p"]
-P_val["P7+9"] = P(N["N7"]+N["N9"], D, delta_t)
+N["N9"] = (N["N8"]+N["8p"]) * P_val["P8+8p"]
+P_val["P7+9"] = P(N["N7"]+N["N9"*1/2], D, delta_t)
 
 #(11)
 N["N10"] = (N["N7"]+N["N9"]) * P_val["P7+9"]
 P_val["P10"] = P(N["N10"], D, delta_t)
+
+#2週目の(6)
+value = N["N5"] * 1/4 - N["N9"] * 1/2 - N["N8p"] * 1/2
+# P5を計算して辞書に格納
+P_val["P5"] = P(value, D, delta_t)
+
+#(6),(7),(7'),(8),(8'),(9),(10),(11)を繰り返すコードを作る。
 
 # 結果の確認
 for key in sorted(N.keys()):
