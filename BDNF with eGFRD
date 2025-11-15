@@ -133,7 +133,14 @@ for key in sorted(N.keys()):
 # プロット
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize=(8,5))
-x = np.arange(len(N_vals))
+keys = ["N0", "N1", "N2", "N3", "N3p", "N4", "N4p", "N5", "N5p", "N6", "N6p", "N7", "N7p", "N8", "N8p", "N8pp", "N9", "N10"]
+# keysのうち、N辞書に存在するキーだけを抽出して値をリストに
+N_vals = [N[k] for k in keys if k in N]
+# 時間軸 x を作成 (delta_t刻み)
+x = np.arange(len(N_vals)) * delta_t
+# x と N_vals の中身を確認
+print("x =", x)
+print("N_vals =", N_vals)
 ax.plot(x, N_vals, marker='o')
 ax.set_xticks(x)
 ax.set_xticklabels(labels, rotation=45)
