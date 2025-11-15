@@ -36,15 +36,17 @@ N["N2"] = N["N1"] * P_val["P1"]
 
 # (3) P2, P2', N3
 P_val["P2"] = P(N["N2"], D, delta_t)
+
+# (3p)
 P_val["P2p"] = P(N["N2"] * 1/2, D, delta_t)
 N["N3"] = N["N2"] * P_val["P2"]
+
+#(4)
+P_val["P3"] = P(N["N3"], D, delta_t)
 N["N3p"] = N["N2"] * P_val["P2p"]
 # P2'=P2p
 
-# (4) P3, P3', P3'', N4
-P_val["P3"] = P(N["N3"], D, delta_t)
-P_val["P3p"] = P((N["N3"] + N["N2"] + N["N5"] * 1/4) if "N5" in N else N["N3"], D, delta_t)
-P_val["P3pp"] = P(N["N3"], D, delta_t)
+
 
 #(5)
 N["N4"] = N["N3"]* P_val["P3"]
@@ -57,6 +59,12 @@ P_val["P4p"] = P(N["N4p"], D, delta_t)
 #(6)
 N["N5"] = N["N4"] * P_val["P4"]
 P_val["P5"] = P(N["N5"] * 1/4, D, delta_t)
+
+#(4p) calculate N5 in (6) 
+P_val["P3p"] = P((N["N3"] + N["N2"] + N["N5"] * 1/4) , D, delta_t)
+
+#(4pp)
+P_val["P3pp"] = P(N["N3p"], D, delta_t)
 
 # (6p)
 N["N5p"] = N["N4p"] * P_val["P4p"]
