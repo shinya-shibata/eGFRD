@@ -32,8 +32,8 @@ def diffusion_coefficient(T, eta, R):
     return kB * T / (6 * np.pi * eta * R)
 
 # ===== 使用例 =====
-T = 298.15        # 室温 [K]
-eta = 0.001       # 水の粘度 [Pa·s]
+T = 310.15        # 室温 [K]　37℃
+eta = 0.005       # 水の粘度 [Pa·s] (細胞内)
 R = 1e-7          # 粒子半径 100 nm
 
 D = diffusion_coefficient(T, eta, R)
