@@ -100,7 +100,7 @@ P_val["P7p"] = P(N["N7p"], D, delta_t)
 
 #(8'')
 N["N6p+7pp"] = (N["N5p"]+N["N6p"])* P_val["P5p+6p"]
-P_val["P6p+P7pp"] = P(N["N6p+7pp"]*1/4, D, delta_t)
+P_val["P6p+7pp"] = P(N["N6p+7pp"]*1/4, D, delta_t)
 
 #(9)
 N["N8"] = N["N7"] * P_val["P7"]
