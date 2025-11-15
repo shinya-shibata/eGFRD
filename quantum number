@@ -1,0 +1,18 @@
+#分子量　BDNF=27000 (g/mol)
+# 分子量 (g/mol)
+X = 27000  
+
+# Avogadro number
+NA = 6.02e23
+
+# 1分子あたりの質量 (g)
+Mparticle = X / NA
+
+# 濃度 (g/ml)
+Cmass = 3.2e-8
+
+# 分子数濃度 (個/m^3)
+n = (Cmass / Mparticle) * 1e6
+
+
+print(n)
