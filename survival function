@@ -1,0 +1,239 @@
+import math
+
+# --- 定数と初期パラメータの仮定 ---
+# 拡散係数 (D)
+D = 1.0  # 単位を仮定 (例: cm^2/s)
+# 時間 (t)
+t = 10.0 # 単位を仮定 (例: s)
+# 初期粒子数 (N_0)
+N0 = 1.0e15 # 単位を仮定 (例: particles)
+# 時間間隔 (Δt) - 「2週目」のP_5で使用
+Delta_t = 1.0 # 単位を仮定 (例: s)
+
+# 共通の係数 (sqrt(4Dt)の逆数)
+Inv_Sqrt_4Dt = 1.0 / math.sqrt(4 * D * t)
+
+# --- 誤差関数 (erf(x)) ---
+# Pythonのmath.erf()を使用
+# math.erf(x) = (2/√π) * ∫[0,x] exp(-t^2) dt
+
+# --- 反応率 S を計算する関数 ---
+# S(N, factor) = erf(A) - (2/√π) * A * exp(-A^2)
+# ここで A = ((3 / (4 * π * N * factor))^(1/3)) * Inv_Sqrt_4Dt
+# factor は数式中の N_i に掛けられている係数 (例: 1, 1/4, 1/2)
+def calculate_S(N, factor=1.0):
+    if N <= 0:
+        return 0.0 # Nが0以下の場合は反応率は0と仮定
+    
+    # Aの内部の係数: (3 / (4 * π * N * factor))^(1/3)
+    # (4 * π * N * factor)を分母に持つ
+    Term_In_Parentheses = 3.0 / (4.0 * math.pi * N * factor)
+    
+    # A = (Term_In_Parentheses^(1/3)) * Inv_Sqrt_4Dt
+    A = (Term_In_Parentheses ** (1.0/3.0)) * Inv_Sqrt_4Dt
+    
+    # erf(A)
+    erf_A = math.erf(A)
+    
+    # (2/√π) * A * exp(-A^2)
+    Second_Term = (2.0 / math.sqrt(math.pi)) * A * math.exp(-(A**2))
+    
+    S = erf_A - Second_Term
+    return S
+
+    # --- 計算ステップ ---
+
+# 初期値
+N = {'0': N0} # 粒子数を格納するディクショナリ
+
+# S_0 の計算 (factor=1.0)
+S0 = calculate_S(N['0'])
+print(f"S_0 = {S0:.5e}")
+
+# N_1 の計算
+N['1'] = N['0'] * (1 - S0)
+print(f"N_1 = {N['1']:.5e}")
+
+# S_1 の計算 (factor=1/4)
+S1 = calculate_S(N['1'], factor=0.25)
+print(f"S_1 = {S1:.5e}")
+
+# N_2 の計算
+N['2'] = N['1'] * (1 - S1)
+print(f"N_2 = {N['2']:.5e}")
+
+# S_2 の計算 (factor=1.0)
+S2 = calculate_S(N['2'])
+print(f"S_2 = {S2:.5e}")
+
+# S_2' の計算 (factor=1/2)
+S2_prime = calculate_S(N['2'], factor=0.5)
+print(f"S_2' = {S2_prime:.5e}")
+
+# N_3 の計算
+N['3'] = N['2'] * (1 - S2)
+print(f"N_3 = {N['3']:.5e}")
+
+# N_3' の計算
+N['3_prime'] = N['2'] * (1 - S2_prime)
+print(f"N_3' = {N['3_prime']:.5e}")
+
+# S_3'' の計算 (factor=1.0)
+S3_double_prime = calculate_S(N['3_prime'])
+print(f"S_3'' = {S3_double_prime:.5e}")
+
+# N_4'' の計算
+N['4_double_prime'] = N['3_prime'] * (1 - S3_double_prime)
+print(f"N_4'' = {N['4_double_prime']:.5e}")
+
+
+# S_3 の計算 (factor=1.0)
+S3 = calculate_S(N['3'])
+print(f"S_3 = {S3:.5e}")
+
+# N_4 の計算
+N['4'] = N['3'] * (1 - S3)
+print(f"N_4 = {N['4']:.5e}")
+
+# N_5 の計算
+N['5'] = N['4'] * (1 - calculate_S(N['4']))
+print(f"N_5 = {N['5']:.5e}")
+
+# N_5 の値を使用して S_3' の計算を実行する前に N_5 の値を設定
+# N_5 は N_4 の次のステップで計算されるため、N_3, N_2, N_5*(1/4) の合計を計算
+# N_5_factor_1_4_val は N['5'] の計算後に使用可能
+
+# S_3' の計算 (N_3 + N_2 + N_5 * 1/4) の合計値の factor=1.0
+N_3_S3_prime_arg = N['3'] + N['2'] + N['5'] * 0.25
+S3_prime = calculate_S(N_3_S3_prime_arg)
+print(f"S_3' = {S3_prime:.5e}")
+
+# N_4' の計算
+N['4_prime'] = N_3_S3_prime_arg * (1 - S3_prime)
+print(f"N_4' = {N['4_prime']:.5e}")
+
+# S_4' の計算 (factor=1.0)
+S4_prime = calculate_S(N['4_prime'])
+print(f"S_4' = {S4_prime:.5e}")
+
+# N_5' の計算
+N['5_prime'] = N['4_prime'] * (1 - S4_prime)
+print(f"N_5' = {N['5_prime']:.5e}")
+
+
+# N_6' の計算
+# N_6' = (1-S_5') * N_5'
+# S_5' の計算 (factor=1/2) - ここで N['5_prime'] を使用
+S5_prime = calculate_S(N['5_prime'], factor=0.5)
+print(f"S_5' (for N_6') = {S5_prime:.5e}")
+N['6_prime'] = (1 - S5_prime) * N['5_prime']
+print(f"N_6' = {N['6_prime']:.5e}")
+
+# S_5'+6' の計算 (N_5' + N_6') の合計値の factor=1.0
+N_5_6_prime_arg = N['5_prime'] + N['6_prime']
+S5_6_prime = calculate_S(N_5_6_prime_arg) # N_5'+6' の表記が S_5'+6'' と混同の可能性あり
+print(f"S_5'+6' = {S5_6_prime:.5e}")
+
+# N_6'+7'' の計算
+# N_6'+7'' = (1 - S_5'+6') * (N_5' + N_6')
+N['6_prime_7_double_prime'] = (1 - S5_6_prime) * N_5_6_prime_arg
+print(f"N_6'+7'' = {N['6_prime_7_double_prime']:.5e}")
+
+# S_6'+7'' の計算 (factor=1/4)
+S6_7_double_prime = calculate_S(N['6_prime_7_double_prime'], factor=0.25)
+print(f"S_6'+7'' = {S6_7_double_prime:.5e}")
+
+
+# S_4 の計算 (N_5 の計算に再利用)
+S4 = calculate_S(N['4'])
+print(f"S_4 = {S4:.5e}")
+
+# N_5 の再計算 (念のため、前に計算済みだがここにステップとして配置)
+N['5'] = N['4'] * (1 - S4)
+print(f"N_5 (reconfirm) = {N['5']:.5e}")
+
+# S_5 の計算 (factor=1/4)
+S5 = calculate_S(N['5'], factor=0.25)
+print(f"S_5 = {S5:.5e}")
+
+# N_6 の計算
+N['6'] = N['5'] * (1 - S5)
+print(f"N_6 = {N['6']:.5e}")
+
+# S_6 の計算 (factor=1.0)
+S6 = calculate_S(N['6'])
+print(f"S_6 = {S6:.5e}")
+
+# S_6' の計算 (N_6 + N_4'' + N_B-Raf) の合計値の factor=1.0
+# N_B-Raf は不明な定数のため、ここでは N_B-Raf = 0 と仮定
+N_B_Raf = 0.0
+N_6_S6_prime_arg = N['6'] + N['4_double_prime'] + N_B_Raf
+S6_prime = calculate_S(N_6_S6_prime_arg)
+print(f"S_6' = {S6_prime:.5e} (N_B-Raf=0)")
+
+# N_7 の計算
+N['7'] = N['6'] * (1 - S6)
+print(f"N_7 = {N['7']:.5e}")
+
+# N_7' の計算
+N['7_prime'] = N['6_prime'] * (1 - S6_prime)
+print(f"N_7' = {N['7_prime']:.5e}")
+
+# S_7 の計算 (N_7 を使用, factor=1.0)
+S7 = calculate_S(N['7'])
+print(f"S_7 = {S7:.5e}")
+
+# S_7' の計算 (N_7' を使用, factor=1.0)
+S7_prime = calculate_S(N['7_prime'])
+print(f"S_7' = {S7_prime:.5e}")
+
+# N_8, N_8' の計算
+N['8'] = N['7'] * (1 - S7)
+N['8_prime'] = N['7_prime'] * (1 - S7_prime)
+print(f"N_8 = {N['8']:.5e}, N_8' = {N['8_prime']:.5e}")
+
+# S_8+8’ の計算 (N_8 + N_8' * 1/2) の合計値の factor=1.0
+N_8_8_prime_arg = N['8'] + N['8_prime'] * 0.5
+S8_8_prime = calculate_S(N_8_8_prime_arg)
+print(f"S_8+8' = {S8_8_prime:.5e}")
+
+# N_9 の計算
+N['9'] = (N['8'] + N['8_prime']) * (1 - S8_8_prime)
+print(f"N_9 = {N['9']:.5e}")
+
+# N_8'' の計算
+N['8_double_prime'] = N['6_prime_7_double_prime'] * (1 - S6_7_double_prime)
+print(f"N_8'' = {N['8_double_prime']:.5e}")
+
+# S_8'' の計算 (factor=1.0)
+S8_double_prime = calculate_S(N['8_double_prime'])
+print(f"S_8'' = {S8_double_prime:.5e}")
+
+
+# S_7+9 の計算 (N_7 + N_9 * 1/2) の合計値の factor=1.0
+N_7_9_arg = N['7'] + N['9'] * 0.5
+S7_9 = calculate_S(N_7_9_arg)
+print(f"S_7+9 = {S7_9:.5e}")
+
+# N_10 の計算
+N['10'] = (N['7'] + N['9']) * (1 - S7_9)
+print(f"N_10 = {N['10']:.5e}")
+
+# S_10 の計算 (factor=1.0)
+S10 = calculate_S(N['10'])
+print(f"S_10 = {S10:.5e}")
+
+# --- 2週目 ---
+print("\n--- 2週目 ---")
+
+# P_5 の計算
+# P_5 の引数 N_val = (N_5 * 1/4 - N_9 * 1/2 - N_8' * 1/2)
+# 物理的な意味合いから、この値は正である必要があります。
+N_P5_arg = N['5'] * 0.25 - N['9'] * 0.5 - N['8_prime'] * 0.5
+
+if N_P5_arg > 0:
+    P5 = calculate_P5(N_P5_arg)
+    print(f"P_5 = {P5:.5e}")
+else:
+    print(f"P_5 の引数 N_P5_arg = {N_P5_arg:.5e} が負またはゼロのため計算をスキップ。")
+
