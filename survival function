@@ -47,8 +47,6 @@ def calculate_S(N, factor=1.0):
 
     # --- 計算ステップ ---
 
-# 初期値
-N = {'0': N0} # 粒子数を格納するディクショナリ
 
 # S_0 の計算 (factor=1.0)
 S0 = calculate_S(N['0'])
